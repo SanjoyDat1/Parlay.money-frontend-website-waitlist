@@ -29,7 +29,8 @@
             font-family: 'Space Grotesk', sans-serif;
             overflow-x: hidden;
             height: 900vh; /* Deep scroll for narrative pacing */
-            cursor: none; /* Custom cursor is enabled */
+            cursor: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* --- Global Branding UI --- */
@@ -360,7 +361,7 @@
             border: 1px solid #eee;
             border-radius: 20px;
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 16px;
+            font-size: 16px; /* Prevents iOS zoom on focus */
             outline: none;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-sizing: border-box;
@@ -370,7 +371,6 @@
         input:focus {
             border-color: var(--brand-blue);
             box-shadow: 0 0 0 6px var(--brand-blue-light);
-            transform: scale(1.02);
         }
 
         .submit-btn {
@@ -463,17 +463,71 @@
             transition: opacity 0.6s ease;
         }
 
+        /* Mobile: use default cursor, hide custom cursor */
+        @media (max-width: 800px), (hover: none) {
+            body { cursor: auto; }
+            .cursor-dot, .cursor-outline { display: none !important; }
+            input:focus { transform: none; }
+        }
+
         @media (max-width: 800px) {
             :root {
                 --rect-width: 90vw;
-                --rect-height: 220px;
+                --rect-height: 200px;
             }
-            .face { font-size: 1.8rem; border-radius: 30px; padding: 25px; }
-            nav { padding: 30px; }
-            .waitlist-card { padding: 40px 30px; }
-            .ticket-data { font-size: 1.6rem; }
-            .close-btn { top: 20px; left: 20px; width: 44px; height: 44px; }
-            .close-success { top: 20px; right: 20px; left: auto; }
+            body { min-height: 100vh; }
+            nav { padding: 24px 20px; }
+            .logo { font-size: 1.1rem; letter-spacing: 0.25em; }
+            .network-status { font-size: 0.65rem; gap: 8px; }
+            footer { bottom: 24px; right: 20px; font-size: 0.6rem; }
+            .cube-container { gap: 50px; }
+            .face { font-size: 1.6rem; border-radius: 24px; padding: 20px; }
+            .highlight { font-size: 1rem; margin-top: 12px; }
+            .reveal-cta {
+                padding: 16px 32px;
+                font-size: 0.95rem;
+                letter-spacing: 0.08em;
+                min-height: 48px; /* Touch target */
+            }
+            .waitlist-overlay {
+                align-items: flex-start;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .waitlist-card {
+                padding: 50px 24px 40px;
+                margin: 24px 16px 40px;
+                border-radius: 32px;
+                width: calc(100% - 32px);
+                max-width: none;
+                min-height: auto;
+            }
+            .close-btn, .close-waitlist, .close-success {
+                top: 20px; width: 44px; height: 44px;
+                min-width: 44px; min-height: 44px; /* Touch target */
+            }
+            .close-waitlist { left: 20px; }
+            .close-success { right: 20px; left: auto; }
+            .waitlist-header { margin-bottom: 32px; }
+            .waitlist-header h2 { font-size: 2rem; }
+            .waitlist-header p { font-size: 1rem; }
+            .nomination-section { margin-bottom: 28px; }
+            .nomination-label { margin-bottom: 12px; }
+            .input-group { margin-bottom: 24px; }
+            input { padding: 16px 20px; border-radius: 16px; min-height: 48px; }
+            .submit-btn { padding: 18px; font-size: 16px; min-height: 52px; }
+            .success-overlay { padding: 30px 20px; overflow-y: auto; }
+            .success-checkmark { width: 80px; height: 80px; margin-bottom: 20px; }
+            .ticket-box { padding: 32px 24px; border-radius: 24px; }
+            .ticket-data { font-size: 1.4rem; }
+            .ticket-label { font-size: 0.75rem; margin-bottom: 20px; }
+            .scroll-indicator { bottom: 24px; font-size: 10px; letter-spacing: 3px; }
+        }
+
+        @media (max-width: 480px) {
+            :root { --rect-width: 92vw; --rect-height: 180px; }
+            .face { font-size: 1.4rem; padding: 16px; }
+            .waitlist-card { padding: 44px 20px 32px; margin: 16px 12px 32px; }
         }
     </style>
 </head>
@@ -555,7 +609,7 @@
                 </div>
 
                 <div class="input-group">
-                    <input type="email" id="email-input" placeholder="Corporate email address">
+                    <input type="email" id="email-input" placeholder="Personal email">
                 </div>
                 <button class="submit-btn" id="join-btn">Secure My Position</button>
             </div>
@@ -759,13 +813,7 @@
         window.addEventListener('scroll', () => {
             const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight);
             const narrativeEnd = 0.65; 
-            const triggerPoint = 0.94;
-            
             targetRotation = Math.min(scrollPercent / narrativeEnd, 1) * 270;
-
-            if (scrollPercent >= triggerPoint && !isWaitlistVisible) {
-                toggleWaitlist(true);
-            }
         });
 
         ctaBtn.addEventListener('click', () => toggleWaitlist(true));
@@ -774,12 +822,13 @@
         closeWaitlist.addEventListener('click', () => toggleWaitlist(false));
         closeSuccessBtn.addEventListener('click', () => toggleWaitlist(false));
 
+        const isTouchOrMobile = () => window.matchMedia('(max-width: 800px), (hover: none)').matches;
+
         function toggleWaitlist(show) {
             isWaitlistVisible = show;
             if (show) {
                 document.body.style.cursor = 'auto';
-                cursorDot.style.opacity = '0';
-                cursorOutline.style.opacity = '0';
+                if (!isTouchOrMobile()) { cursorDot.style.opacity = '0'; cursorOutline.style.opacity = '0'; }
                 waitlistOverlay.style.pointerEvents = 'all';
                 scrollHint.style.opacity = '0';
                 
@@ -791,9 +840,8 @@
                     easing: 'cubicBezier(0.4, 0, 0.2, 1)'
                 });
             } else {
-                document.body.style.cursor = 'none';
-                cursorDot.style.opacity = '1';
-                cursorOutline.style.opacity = '1';
+                document.body.style.cursor = isTouchOrMobile() ? '' : 'none';
+                if (!isTouchOrMobile()) { cursorDot.style.opacity = '1'; cursorOutline.style.opacity = '1'; }
                 waitlistOverlay.style.pointerEvents = 'none';
                 scrollHint.style.opacity = '0.8';
 
