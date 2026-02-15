@@ -539,6 +539,42 @@
             font-family: 'Space Mono', monospace;
         }
 
+        .stock-row {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+        .stock-info { display: flex; flex-direction: column; gap: 2px; }
+        .stock-row .stock-price { margin: 0; }
+        .stock-row .stock-delta { margin: 0; }
+        .stock-chart {
+            flex-shrink: 0;
+            width: 72px;
+            height: 32px;
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+        .stock-chart svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .stock-chart line {
+            stroke: rgba(0, 102, 255, 0.2);
+            stroke-width: 1;
+        }
+        .stock-chart path {
+            fill: none;
+            stroke: var(--brand-blue);
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .stock-chart.stock-down path { stroke: #e53935; }
         .founder-card .stock-price {
             font-family: 'Space Mono', monospace;
             font-size: 2rem;
@@ -546,6 +582,7 @@
             color: #0a0a0a;
             margin: 25px 0 8px 0;
         }
+        .stock-row + .card-actions { margin-top: 24px; }
 
         .founder-card .stock-delta {
             font-family: 'Space Mono', monospace;
@@ -1099,6 +1136,9 @@
             .founder-card .stock-price { font-size: 1.35rem; }
             .founder-card .stock-delta { font-size: 0.75rem; }
             .founder-card .ticker { font-size: 0.65rem; padding: 5px 8px; }
+            .stock-row { margin-top: 14px; gap: 8px; }
+            .stock-chart { width: 56px; height: 26px; }
+            .stock-row + .card-actions { margin-top: 18px; }
             .card-actions { margin-top: 14px; gap: 8px; }
             .action-btn { 
                 padding: 14px 16px; 
@@ -1218,8 +1258,15 @@
                     <h3 class="founder-name">Roy Lee</h3>
                     <div class="founder-role">CEO, Cluely</div>
                 </div>
-                <div class="stock-price">$142.50</div>
-                <div class="stock-delta">▲ +12.4%</div>
+                <div class="stock-row">
+                    <div class="stock-info">
+                        <div class="stock-price">$142.50</div>
+                        <div class="stock-delta">▲ +12.4%</div>
+                    </div>
+                    <div class="stock-chart" aria-hidden="true">
+                        <svg viewBox="0 0 80 100" preserveAspectRatio="none"><path d="M0,85 L15,75 L30,70 L45,55 L60,45 L80,25"/></svg>
+                    </div>
+                </div>
                 <div class="card-actions">
                     <button class="action-btn btn-buy">Long</button>
                     <button class="action-btn btn-sell">Short</button>
@@ -1236,8 +1283,15 @@
                     <h3 class="founder-name">Eric Zhu</h3>
                     <div class="founder-role">Creator, Sperm Racer</div>
                 </div>
-                <div class="stock-price">$88.20</div>
-                <div class="stock-delta">▲ +8.1%</div>
+                <div class="stock-row">
+                    <div class="stock-info">
+                        <div class="stock-price">$88.20</div>
+                        <div class="stock-delta">▲ +8.1%</div>
+                    </div>
+                    <div class="stock-chart" aria-hidden="true">
+                        <svg viewBox="0 0 80 100" preserveAspectRatio="none"><path d="M0,70 L20,65 L40,55 L50,60 L65,40 L80,30"/></svg>
+                    </div>
+                </div>
                 <div class="card-actions">
                     <button class="action-btn btn-buy">Long</button>
                     <button class="action-btn btn-sell">Short</button>
@@ -1254,8 +1308,15 @@
                     <h3 class="founder-name">Luke Belmar</h3>
                     <div class="founder-role">You two, connect</div>
                 </div>
-                <div class="stock-price">$410.00</div>
-                <div class="stock-delta" style="color: #ff4444;">▼ -2.3%</div>
+                <div class="stock-row">
+                    <div class="stock-info">
+                        <div class="stock-price">$410.00</div>
+                        <div class="stock-delta" style="color: #ff4444;">▼ -2.3%</div>
+                    </div>
+                    <div class="stock-chart stock-down" aria-hidden="true">
+                        <svg viewBox="0 0 80 100" preserveAspectRatio="none"><path d="M0,30 L25,45 L40,35 L55,55 L70,65 L80,75"/></svg>
+                    </div>
+                </div>
                 <div class="card-actions">
                     <button class="action-btn btn-buy">Long</button>
                     <button class="action-btn btn-sell">Short</button>
@@ -1272,8 +1333,15 @@
                     <h3 class="founder-name">Eric Ou</h3>
                     <div class="founder-role">COO, Turbolearn AI</div>
                 </div>
-                <div class="stock-price">$215.40</div>
-                <div class="stock-delta">▲ +15.7%</div>
+                <div class="stock-row">
+                    <div class="stock-info">
+                        <div class="stock-price">$215.40</div>
+                        <div class="stock-delta">▲ +15.7%</div>
+                    </div>
+                    <div class="stock-chart" aria-hidden="true">
+                        <svg viewBox="0 0 80 100" preserveAspectRatio="none"><path d="M0,90 L18,80 L35,65 L52,50 L70,35 L80,22"/></svg>
+                    </div>
+                </div>
                 <div class="card-actions">
                     <button class="action-btn btn-buy">Long</button>
                     <button class="action-btn btn-sell">Short</button>
@@ -1290,8 +1358,15 @@
                     <h3 class="founder-name">Alexandr Wang</h3>
                     <div class="founder-role">CEO, Scale AI</div>
                 </div>
-                <div class="stock-price">$328.00</div>
-                <div class="stock-delta">▲ +22.1%</div>
+                <div class="stock-row">
+                    <div class="stock-info">
+                        <div class="stock-price">$328.00</div>
+                        <div class="stock-delta">▲ +22.1%</div>
+                    </div>
+                    <div class="stock-chart" aria-hidden="true">
+                        <svg viewBox="0 0 80 100" preserveAspectRatio="none"><path d="M0,95 L12,85 L28,70 L45,55 L62,38 L80,18"/></svg>
+                    </div>
+                </div>
                 <div class="card-actions">
                     <button class="action-btn btn-buy">Long</button>
                     <button class="action-btn btn-sell">Short</button>
@@ -1308,8 +1383,15 @@
                     <h3 class="founder-name">Adam Neumann</h3>
                     <div class="founder-role">WeWork → Flow</div>
                 </div>
-                <div class="stock-price">$156.80</div>
-                <div class="stock-delta" style="color: #ff4444;">▼ -5.2%</div>
+                <div class="stock-row">
+                    <div class="stock-info">
+                        <div class="stock-price">$156.80</div>
+                        <div class="stock-delta" style="color: #ff4444;">▼ -5.2%</div>
+                    </div>
+                    <div class="stock-chart stock-down" aria-hidden="true">
+                        <svg viewBox="0 0 80 100" preserveAspectRatio="none"><path d="M0,25 L22,38 L42,52 L58,68 L80,82"/></svg>
+                    </div>
+                </div>
                 <div class="card-actions">
                     <button class="action-btn btn-buy">Long</button>
                     <button class="action-btn btn-sell">Short</button>
@@ -1326,8 +1408,15 @@
                     <h3 class="founder-name">Elizabeth Holmes</h3>
                     <div class="founder-role">Theranos</div>
                 </div>
-                <div class="stock-price">$12.40</div>
-                <div class="stock-delta" style="color: #ff4444;">▼ -18.0%</div>
+                <div class="stock-row">
+                    <div class="stock-info">
+                        <div class="stock-price">$12.40</div>
+                        <div class="stock-delta" style="color: #ff4444;">▼ -18.0%</div>
+                    </div>
+                    <div class="stock-chart stock-down" aria-hidden="true">
+                        <svg viewBox="0 0 80 100" preserveAspectRatio="none"><path d="M0,15 L20,35 L40,55 L60,72 L80,90"/></svg>
+                    </div>
+                </div>
                 <div class="card-actions">
                     <button class="action-btn btn-buy">Long</button>
                     <button class="action-btn btn-sell">Short</button>
@@ -1344,8 +1433,15 @@
                     <h3 class="founder-name">Sam Bankman-Fried</h3>
                     <div class="founder-role">FTX / Alameda</div>
                 </div>
-                <div class="stock-price">$4.20</div>
-                <div class="stock-delta" style="color: #ff4444;">▼ -94.0%</div>
+                <div class="stock-row">
+                    <div class="stock-info">
+                        <div class="stock-price">$4.20</div>
+                        <div class="stock-delta" style="color: #ff4444;">▼ -94.0%</div>
+                    </div>
+                    <div class="stock-chart stock-down" aria-hidden="true">
+                        <svg viewBox="0 0 80 100" preserveAspectRatio="none"><path d="M0,8 L15,25 L30,45 L50,70 L65,85 L80,98"/></svg>
+                    </div>
+                </div>
                 <div class="card-actions">
                     <button class="action-btn btn-buy">Long</button>
                     <button class="action-btn btn-sell">Short</button>
