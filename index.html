@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <title>Parlay - Bet on Founders</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <style>
@@ -46,6 +46,7 @@
             z-index: 100;
             pointer-events: none;
             box-sizing: border-box;
+            transition: padding 0.3s ease;
         }
 
         .logo {
@@ -80,6 +81,7 @@
             position: fixed;
             bottom: 40px;
             right: 60px;
+            padding-right: env(safe-area-inset-right, 0);
             z-index: 50;
             font-family: 'Space Mono', monospace;
             font-size: 0.7rem;
@@ -181,7 +183,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: clamp(2.5rem, 6vw, 3.8rem); 
+            font-size: clamp(1.8rem, 5vw, 3.8rem); 
             font-weight: 700;
             text-align: center;
             padding: 40px;
@@ -219,7 +221,7 @@
         
         .highlight {
             font-weight: 600;
-            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
             display: block;
             margin-top: 20px;
             opacity: 0;
@@ -251,6 +253,10 @@
         .reveal-cta:hover {
             transform: scale(1.05) translateY(-5px);
             box-shadow: 0 25px 50px rgba(0, 102, 255, 0.5);
+        }
+
+        .reveal-cta, .submit-btn, .close-btn, input {
+            touch-action: manipulation; /* Removes 300ms tap delay on mobile */
         }
 
         /* --- Waitlist Overlay Sheet --- */
@@ -452,6 +458,7 @@
             position: fixed;
             bottom: 40px;
             left: 50%;
+            padding-bottom: env(safe-area-inset-bottom, 0);
             transform: translateX(-50%);
             font-size: 11px;
             text-transform: uppercase;
@@ -476,10 +483,10 @@
                 --rect-height: 200px;
             }
             body { min-height: 100vh; }
-            nav { padding: 24px 20px; }
-            .logo { font-size: 1.1rem; letter-spacing: 0.25em; }
+            nav { padding: 24px 20px; padding-top: max(24px, env(safe-area-inset-top)); }
+            .logo { font-size: 1rem; letter-spacing: 0.15em; }
             .network-status { font-size: 0.65rem; gap: 8px; }
-            footer { bottom: 24px; right: 20px; font-size: 0.6rem; }
+            footer { bottom: 24px; right: 20px; font-size: 0.6rem; padding-right: env(safe-area-inset-right, 0); }
             .cube-container { gap: 50px; }
             .face { font-size: 1.6rem; border-radius: 24px; padding: 20px; }
             .highlight { font-size: 1rem; margin-top: 12px; }
@@ -492,7 +499,9 @@
             .waitlist-overlay {
                 align-items: flex-start;
                 overflow-y: auto;
+                overflow-x: hidden;
                 -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain; /* Prevents scroll chaining to body */
             }
             .waitlist-card {
                 padding: 50px 24px 40px;
@@ -521,13 +530,14 @@
             .ticket-box { padding: 32px 24px; border-radius: 24px; }
             .ticket-data { font-size: 1.4rem; }
             .ticket-label { font-size: 0.75rem; margin-bottom: 20px; }
-            .scroll-indicator { bottom: 24px; font-size: 10px; letter-spacing: 3px; }
+            .scroll-indicator { bottom: 24px; font-size: 10px; letter-spacing: 3px; padding-bottom: env(safe-area-inset-bottom, 0); }
         }
 
         @media (max-width: 480px) {
             :root { --rect-width: 92vw; --rect-height: 180px; }
+            .logo { font-size: 0.9rem; letter-spacing: 0.1em; }
             .face { font-size: 1.4rem; padding: 16px; }
-            .waitlist-card { padding: 44px 20px 32px; margin: 16px 12px 32px; }
+            .waitlist-card { padding: 44px 20px 32px; margin: 16px 12px 32px; padding-bottom: calc(32px + env(safe-area-inset-bottom, 0)); }
         }
     </style>
 </head>
@@ -653,8 +663,7 @@
         const ctx = canvas.getContext('2d');
         let width, height;
         let particles = [];
-        const particleCount = 160;
-        const spacing = 45;
+        let particleCount, spacing; /* Set in resize() for mobile optimization */
         let cols, rows;
         let grid = [];
         const mouse = { x: -1000, y: -1000, vx: 0, vy: 0, lastX: 0, lastY: 0 };
@@ -662,6 +671,9 @@
         function resize() {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
+            const isMobile = width < 768;
+            particleCount = isMobile ? 60 : 160;
+            spacing = isMobile ? 60 : 45;
             cols = Math.ceil(width / spacing) + 1;
             rows = Math.ceil(height / spacing) + 1;
             grid = new Array(cols * rows).fill(0).map(() => ({ vx: 0, vy: 0 }));
@@ -749,23 +761,31 @@
 
         window.addEventListener('resize', resize);
         window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        window.addEventListener('touchmove', e => {
+            if (e.touches.length > 0) {
+                mouse.x = e.touches[0].clientX;
+                mouse.y = e.touches[0].clientY;
+            }
+        }, { passive: true });
         resize(); animateCanvas();
 
-        // --- 2. Custom Cursor ---
+        const isMobile = () => window.innerWidth < 768;
         const cursorDot = document.querySelector('.cursor-dot');
         const cursorOutline = document.querySelector('.cursor-outline');
 
-        window.addEventListener('mousemove', (e) => {
-            cursorDot.style.left = `${e.clientX}px`;
-            cursorDot.style.top = `${e.clientY}px`;
-            anime({
-                targets: cursorOutline,
-                left: e.clientX,
-                top: e.clientY,
-                duration: 700,
-                easing: 'easeOutElastic(1, .8)'
+        if (!isMobile()) {
+            window.addEventListener('mousemove', (e) => {
+                cursorDot.style.left = `${e.clientX}px`;
+                cursorDot.style.top = `${e.clientY}px`;
+                anime({
+                    targets: cursorOutline,
+                    left: e.clientX,
+                    top: e.clientY,
+                    duration: 700,
+                    easing: 'easeOutElastic(1, .8)'
+                });
             });
-        });
+        }
 
         // --- 3. Physics Narrative Scroll Loop ---
         const cube = document.getElementById('cube');
@@ -911,14 +931,17 @@
             }
         });
 
-        // 3D Interaction Loop
-        document.addEventListener('mousemove', (e) => {
+        function handleCardTilt(clientX, clientY) {
             if (!isWaitlistVisible) return;
-            const rect = waitlistCard.getBoundingClientRect();
-            const x = (e.clientX - (rect.left + rect.width / 2)) / window.innerWidth;
-            const y = (e.clientY - (rect.top + rect.height / 2)) / window.innerHeight;
-            anime({ targets: waitlistCard, rotateX: y * -12, rotateY: x * 12, duration: 400, easing: 'easeOutQuad' });
-        });
+            const x = (clientX - window.innerWidth / 2) / window.innerWidth;
+            const y = (clientY - window.innerHeight / 2) / window.innerHeight;
+            const tilt = window.innerWidth < 768 ? 6 : 12; /* Subtle tilt on mobile */
+            anime({ targets: waitlistCard, rotateX: y * -tilt, rotateY: x * tilt, duration: 400, easing: 'easeOutQuad' });
+        }
+        document.addEventListener('mousemove', e => handleCardTilt(e.clientX, e.clientY));
+        document.addEventListener('touchmove', e => {
+            if (e.touches.length > 0) handleCardTilt(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: true });
     </script>
 </body>
 </html>
