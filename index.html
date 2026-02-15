@@ -28,7 +28,7 @@
             color: var(--text-color);
             font-family: 'Space Grotesk', sans-serif;
             overflow-x: hidden;
-            height: 550vh; /* Scroll for narrative pacing */
+            height: 400vh; /* Scroll for narrative pacing */
             cursor: none;
             -webkit-tap-highlight-color: transparent;
         }
@@ -812,8 +812,7 @@
 
         window.addEventListener('scroll', () => {
             const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight);
-            const narrativeEnd = 0.65; 
-            targetRotation = Math.min(scrollPercent / narrativeEnd, 1) * 270;
+            targetRotation = Math.min(scrollPercent, 1) * 270; /* Rotation completes at end of scroll */
         });
 
         ctaBtn.addEventListener('click', () => toggleWaitlist(true));
